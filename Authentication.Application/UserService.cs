@@ -31,9 +31,9 @@ namespace Authentication.Application
 
         }
 
-        public async Task<string> UserLoginAsync(string email, string password)
+        public async Task<string> UserLoginAsync(string userName, string password)
         {
-            var userEntity = await _repository.UserLoginAsync(email, password);
+            var userEntity = await _repository.UserLoginAsync(userName, password);
             if (userEntity == null) 
             {
                 return string.Empty;

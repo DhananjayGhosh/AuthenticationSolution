@@ -18,14 +18,20 @@ namespace Authentication.Application
         }
         public string GenearteToken(UserEntity entity)
         {
-            var Claims = new[]
+            var Claims = new List<Claim>
             {
-                    new Claim(ClaimTypes.NameIdentifier, entity.Id.ToString()),
-                    new Claim(ClaimTypes.Email, entity.Email),
-                    new Claim(ClaimTypes.Name, entity.UserName),
-                    // Fix: Convert TokenExpirationInMinutes to a string to match the expected type for Claim value
-                    new Claim(ClaimTypes.Expiration, DateTime.UtcNow.AddMinutes(entity.TokenExpirationInMinutes).ToString("o"))
+              new Claim(ClaimTypes.NameIdentifier, entity.Id.ToString()),
+              new Claim(ClaimTypes.Email, entity.Email),
+              new Claim(ClaimTypes.Name, entity.UserName)
             };
+            // Add expiration claim only if TokenExpirationInMinutes is set
+            if (entity.TokenExpirationInMinutes.HasValue)
+            {
+                Claims.Add(new Claim(
+                    ClaimTypes.Expiration,
+                    DateTime.UtcNow.AddMinutes(entity.TokenExpirationInMinutes.Value).ToString("o")
+                ));
+            }
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
             var cred = new SigningCredentials(key, SecurityAlgorithms.HmacSha512);
             var token = new JwtSecurityToken
@@ -33,7 +39,9 @@ namespace Authentication.Application
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: Claims,
-                expires: DateTime.UtcNow.AddMinutes(entity.TokenExpirationInMinutes), // Ensure expiration matches the claim
+                expires: entity.TokenExpirationInMinutes.HasValue
+               ? DateTime.UtcNow.AddMinutes(entity.TokenExpirationInMinutes.Value)
+               : null, // unlimited access (no expiry)
                 signingCredentials: cred
             );
             return new JwtSecurityTokenHandler().WriteToken(token);

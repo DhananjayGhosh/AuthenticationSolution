@@ -20,8 +20,7 @@ namespace Authentication.Infrastructure.Helper
                 FirstName = registration.FirstName,
                 LastName = registration.LastName,
                 TokenExpirationInMinutes = registration.TokenExpirationInMinutes,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = null,
+                CreatedAt = DateTime.UtcNow
             };
         }
         public static UserEntity MapToUserEntity(Users users)
@@ -33,6 +32,7 @@ namespace Authentication.Infrastructure.Helper
                 Email = users.Email,
                 FirstName = users.FirstName,
                 LastName = users.LastName,
+                TokenExpirationInMinutes = users.TokenExpirationInMinutes
             };
         }
     }

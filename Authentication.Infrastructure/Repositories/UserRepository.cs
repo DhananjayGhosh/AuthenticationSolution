@@ -33,12 +33,12 @@ namespace Authentication.Infrastructure.Repositories
 
         }
 
-        public async Task<UserEntity?> UserLoginAsync(string email, string password)
+        public async Task<UserEntity?> UserLoginAsync(string userName, string password)
         {
             // Step 1: Fetch the user (from DB)
             var user = await _context.Users
                 .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.Email == email);
+                .FirstOrDefaultAsync(u => u.UserName == userName);
 
             // Step 2: If not found, return empty
             if (user == null)

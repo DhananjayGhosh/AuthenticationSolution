@@ -23,7 +23,7 @@ namespace Authentication.Infrastructure.DbEntity
         public string? FirstName { get; set; }
 
         public string? LastName { get; set; }
-        public int TokenExpirationInMinutes { get; set; }
+        public int? TokenExpirationInMinutes { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

@@ -1,8 +1,6 @@
 ﻿using Authentication.Domain.DTOs;
 using Authentication.Domain.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
 using System.Text;
 
 namespace Authentication.App.Controllers
@@ -17,6 +15,12 @@ namespace Authentication.App.Controllers
         {
             _userService = userService;
             _documentRead = documentRead;
+        }
+        [HttpGet]
+        [Route("getUser")]
+        public IActionResult GetUser()
+        {
+            return Ok("User is authenticated");
         }
         [HttpPost]
         [Route("userRegistration")]
@@ -50,12 +54,12 @@ namespace Authentication.App.Controllers
             }
             try
             {
-                var token = await _userService.UserLoginAsync(login.Email,login.Password);
+                var token = await _userService.UserLoginAsync(login.userName,login.Password);
                 if(string.IsNullOrEmpty(token))
                 {
-                    return Unauthorized("Invalid email or password.");
+                    return Unauthorized("Invalid UserName or password.");
                 }
-                return Ok(new { Token = token });
+                return Ok(token);
             }
             catch (Exception ex) 
             {
@@ -83,7 +87,7 @@ namespace Authentication.App.Controllers
         }
 
         [HttpGet("getTemplates")]
-        public async Task<IActionResult> GetReportTemplates(
+        public IActionResult GetReportTemplates(
             [FromQuery] string doctorId,
             [FromQuery] string modality,
             [FromQuery] string fileName
@@ -109,22 +113,6 @@ namespace Authentication.App.Controllers
             catch (Exception ex)
             {
                 return StatusCode(500, ex.Message + " Templates not derived");
-            }
-        }
-        [HttpGet("getPatient")]
-        [Authorize]
-        public async Task<IActionResult> GetPatientData()
-        {
-            try
-            {
-                var userName = User.Identity?.Name;
-                var expires = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Expiration)?.Value;
-
-                return Ok(userName+" "+ expires);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
             }
         }
 
