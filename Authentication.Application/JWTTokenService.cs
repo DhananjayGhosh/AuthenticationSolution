@@ -41,7 +41,7 @@ namespace Authentication.Application
                 claims: Claims,
                 expires: entity.TokenExpirationInMinutes.HasValue
                ? DateTime.UtcNow.AddMinutes(entity.TokenExpirationInMinutes.Value)
-               : null, // unlimited access (no expiry)
+               : DateTime.UtcNow.AddMinutes(60), // unlimited access (no expiry)
                 signingCredentials: cred
             );
             return new JwtSecurityTokenHandler().WriteToken(token);
